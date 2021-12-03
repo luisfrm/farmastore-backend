@@ -18,7 +18,6 @@ connection.connect (err => {
     console.error('error connecting:');
     return;
   };
-  console.log("Database server running")
 })
 
 router.get('/', (req, res) => {

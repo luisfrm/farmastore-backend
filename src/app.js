@@ -20,10 +20,4 @@ app.use("/products", productRoutes)
 app.use("/users", userRoutes)
 app.use("/category", categoryRoutes)
 
-const errorHandler = (err, req, res, next) => {
-console.log(err.message)
-}
-
-app.use(errorHandler)
-
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`))

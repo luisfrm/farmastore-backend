@@ -11,6 +11,18 @@ const lastId = async(table) => {
   return id;
 }
 
+const createNivelUsuario = (idUsuario, idNivel) => {
+  const sql = `INSERT INTO nivel_usuario(idUsuario, idNivel) values('${idUsuario}', ${idNivel})`;
+  connection.query(sql, err => {
+    if (err) {
+      console.log(err.message)
+      return 400
+    } else {
+      return 200;
+    }
+  })
+}
+
 const connection = dbConnection() 
 
 connection.connect (err => {
@@ -18,7 +30,6 @@ connection.connect (err => {
     console.error('error connecting:');
     return;
   };
-  console.log("Database server running")
 })
 
 router.get('/', (req, res) => {
@@ -54,18 +65,23 @@ router.get('/:id', (req, res) => {
 })
 
 router.post('/', async(req, res) => {
-  const {user, pass, nombre, apellido, cedula, telefono, direccion, correo} = req.body;
+  const {user, pass, nombre, apellido, cedula, telefono, direccion, correo, idNivel} = req.body;
   const sql = `INSERT INTO usuario(user, pass, nombre, apellido, cedula, telefono, direccion, correo) VALUES('${user}', '${pass}', '${nombre}', '${apellido}', '${cedula}', '${telefono}', '${direccion}', '${correo}')`;
 
   connection.query(sql, err => {
     if (err) {
       console.log(err.message)
-      res.status(400).json(err)
+      res.status(500).json(err)
+      return
     } else {
       let id;
       lastId('usuario').then(x => {
         id=x
-        if (id!=='400') updateDate(id, 'usuario')
+        console.log(id)
+        if (id!=='400') {
+          updateDate(id, 'usuario')
+          createNivelUsuario(id, idNivel)
+        }
       })
       
       res.status(200).json({message: "User was created"})
