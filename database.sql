@@ -9,7 +9,7 @@ CREATE TABLE usuario (
   id INT PRIMARY KEY AUTO_INCREMENT,
   user VARCHAR(15) NOT NULL UNIQUE,
   pass VARCHAR(255) NOT NULL,
-  fecha DATE NOT NULL,
+  fecha DATE DEFAULT NULL,
   nombre VARCHAR(20) NOT NULL,
   apellido VARCHAR(20) NOT NULL,
   cedula VARCHAR(11) UNIQUE NOT NULL,
@@ -17,6 +17,28 @@ CREATE TABLE usuario (
   direccion VARCHAR(50) NULL,
   correo VARCHAR(30) NULL
 );
+
+
+CREATE TRIGGER testref BEFORE INSERT ON test1
+  FOR EACH ROW
+  BEGIN
+    INSERT INTO test2 SET a2 = NEW.a1;
+    DELETE FROM test3 WHERE a3 = NEW.a1;
+    UPDATE test4 SET b4 = b4 + 1 WHERE a4 = NEW.a1;
+  END;
+|
+
+delimiter |
+
+CREATE TRIGGER new_user
+AFTER INSERT 
+ON usuario FOR EACH ROW
+  BEGIN
+    UPDATE usuario SET fecha = CURDATE() WHERE id=new.id;
+  END
+|
+
+delimiter ;
 
 CREATE TABLE nivel_usuario(
   id INT PRIMARY KEY AUTO_INCREMENT,
@@ -43,12 +65,11 @@ CREATE TABLE pago_cliente (
   CONSTRAINT fk_Cli FOREIGN KEY(idCliente) REFERENCES usuario(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO usuario (user, pass, fecha, nombre, apellido, cedula, telefono, direccion, correo)
+INSERT INTO usuario (user, pass, nombre, apellido, cedula, telefono, direccion, correo)
 VALUES
 (
   'admin',
   'admin',
-  CURDATE(),
   "Luis",
   "Rivas",
    "28197626",
@@ -60,15 +81,16 @@ VALUES
 INSERT INTO nivel_usuario(idUsuario, idNivel) VALUES(1, 1);
 
 create table categoria (
-id INT PRIMARY KEY AUTO_INCREMENT,
-nombre VARCHAR(50) NOT NULL
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  nombre VARCHAR(50) NOT NULL
 );
 
 create table producto (
   id INT AUTO_INCREMENT PRIMARY KEY,
   descripcion	VARCHAR(50) NOT NULL,
-  precio decimal(18,2) NOT NULL,
   stock INT NOT NULL,
+  vistas INT NOT NULL,
+  imagen VARCHAR(250) NOT NULL,
   idCategoria INT null,
   fechaVencimiento date NOT NULL,
   CONSTRAINT fkCat FOREIGN KEY(idCategoria) REFERENCES categoria(id) ON DELETE CASCADE ON UPDATE CASCADE 
