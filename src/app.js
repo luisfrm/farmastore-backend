@@ -14,15 +14,16 @@ app.get('/', (req, res) => {
 
 const productRoutes = require("./api-v1/routes/products")
 const userRoutes = require("./api-v1/routes/users")
+const categoryRoutes = require("./api-v1/routes/category")
 
 app.use("/products", productRoutes)
 app.use("/users", userRoutes)
+app.use("/category", categoryRoutes)
 
-// const errorHandler = (err, req, res, next) => {
-//  console.log(err.message)
-//  res.status(500).send("Something wrong " + err.message)
-// }
+const errorHandler = (err, req, res, next) => {
+console.log(err.message)
+}
 
-// app.use(errorHandler)
+app.use(errorHandler)
 
 app.listen(PORT, () => console.log(`Server running on PORT ${PORT}`))

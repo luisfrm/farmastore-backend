@@ -18,28 +18,6 @@ CREATE TABLE usuario (
   correo VARCHAR(30) NULL
 );
 
-
-CREATE TRIGGER testref BEFORE INSERT ON test1
-  FOR EACH ROW
-  BEGIN
-    INSERT INTO test2 SET a2 = NEW.a1;
-    DELETE FROM test3 WHERE a3 = NEW.a1;
-    UPDATE test4 SET b4 = b4 + 1 WHERE a4 = NEW.a1;
-  END;
-|
-
-delimiter |
-
-CREATE TRIGGER new_user
-AFTER INSERT 
-ON usuario FOR EACH ROW
-  BEGIN
-    UPDATE usuario SET fecha = CURDATE() WHERE id=new.id;
-  END
-|
-
-delimiter ;
-
 CREATE TABLE nivel_usuario(
   id INT PRIMARY KEY AUTO_INCREMENT,
   idUsuario INT UNIQUE,
@@ -87,12 +65,12 @@ create table categoria (
 
 create table producto (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  descripcion	VARCHAR(50) NOT NULL,
+  descrip	VARCHAR(50) NOT NULL,
   stock INT NOT NULL,
   vistas INT NOT NULL,
   imagen VARCHAR(250) NOT NULL,
   idCategoria INT null,
-  fechaVencimiento date NOT NULL,
+  expired date NOT NULL,
   CONSTRAINT fkCat FOREIGN KEY(idCategoria) REFERENCES categoria(id) ON DELETE CASCADE ON UPDATE CASCADE 
 );
 

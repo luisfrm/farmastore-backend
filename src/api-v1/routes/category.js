@@ -1,15 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const dbConnection = require("../../config/connection");
-const {updateDate, getLastId} = require('../../helpers/helpers')
-
-const lastId = async(table) => {
-  let id;
-  await getLastId(table).then(x => {
-    id=x;
-  });
-  return id;
-}
 
 const connection = dbConnection() 
 
@@ -22,7 +13,7 @@ connection.connect (err => {
 })
 
 router.get('/', (req, res) => {
-  const sql = "SELECT * FROM usuario";
+  const sql = "SELECT * FROM categoria";
 
   connection.query(sql, (err, result) => {
     if (err) console.error
@@ -38,7 +29,7 @@ router.get('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-  const sql = `SELECT * FROM usuario WHERE id=${id}`;
+  const sql = `SELECT * FROM categoria WHERE id=${id}`;
   connection.query(sql, (err, result) => {
     if (err) {
       console.log(err.message)
@@ -54,50 +45,44 @@ router.get('/:id', (req, res) => {
 })
 
 router.post('/', async(req, res) => {
-  const {user, pass, nombre, apellido, cedula, telefono, direccion, correo} = req.body;
-  const sql = `INSERT INTO usuario(user, pass, nombre, apellido, cedula, telefono, direccion, correo) VALUES('${user}', '${pass}', '${nombre}', '${apellido}', '${cedula}', '${telefono}', '${direccion}', '${correo}')`;
+  const {nombre} = req.body;
+  const sql = `INSERT INTO categoria(nombre) VALUES('${nombre}')`;
 
   connection.query(sql, err => {
     if (err) {
       console.log(err.message)
       res.status(400).json(err)
     } else {
-      let id;
-      lastId('usuario').then(x => {
-        id=x
-        if (id!=='400') updateDate(id, 'usuario')
-      })
-      
-      res.status(200).json({message: "User was created"})
+      res.status(200).json({message: "Categoria was created"})
     }
   })
 })
 
 router.put('/:id', (req, res) => {
   const { id } = req.params;
-  const {user, pass, nombre, apellido, cedula, telefono, direccion, correo} = req.body;
-  const sql = `UPDATE usuario SET user='${user}', pass='${pass}', nombre='${nombre}', apellido='${apellido}', cedula='${cedula}', telefono='${telefono}', direccion='${direccion}', correo='${correo}' WHERE id=${id}`;
+  const {nombre} = req.body;
+  const sql = `UPDATE categoria SET nombre='${nombre}' WHERE id=${id}`;
 
   connection.query(sql, err => {
     if (err) {
       console.log(err.message)
       res.status(400).json(err)
     } else {
-      res.status(200).json({message: "User was modified"})
+      res.status(200).json({message: "Product was modified"})
     }
   })
 })
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-  const sql = `DELETE FROM usuario WHERE id=${id}`;
+  const sql = `DELETE FROM categoria WHERE id=${id}`;
 
   connection.query(sql, err => {
     if (err) {
       console.log(err.message)
       res.status(400).json(err)
     } else {
-      res.status(200).json({message: "User was removed"})
+      res.status(200).json({message: "categoria was removed"})
     }
   })
 })
