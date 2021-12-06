@@ -1,11 +1,17 @@
 const mysql = require('mysql');
 
 // MySql
+
+const dbConfig = {
+  connectionLimit : 100,
+  host: `${process.env.dbHOST}`,
+  user: `${process.env.dbUSER}`,
+  password: `${process.env.dbPASS}`,
+  database: `${process.env.dbDATABASE}`
+}
+
 module.exports = () => {
- return mysql.createConnection({
-    host: `${process.env.dbHOST}`,
-    user: `${process.env.dbUSER}`,
-    password: `${process.env.dbPASS}`,
-    database: `${process.env.dbDATABASE}`
-  });
+  var connection = mysql.createPool(dbConfig);
+
+  return connection
 }

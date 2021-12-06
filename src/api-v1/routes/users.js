@@ -3,6 +3,8 @@ const router = express.Router();
 const dbConnection = require("../../config/connection");
 const {updateDate, getLastId} = require('../../helpers/helpers')
 
+const connection = dbConnection();
+
 const lastId = async(table) => {
   let id;
   await getLastId(table).then(x => {
@@ -21,16 +23,8 @@ const createNivelUsuario = (idUsuario, idNivel) => {
       return 200;
     }
   })
+  connection.release();
 }
-
-const connection = dbConnection() 
-
-connection.connect (err => {
-   if (err) {
-    console.error('error connecting:');
-    return;
-  };
-})
 
 router.get('/', (req, res) => {
   const sql = "SELECT * FROM usuario";
@@ -39,9 +33,9 @@ router.get('/', (req, res) => {
     if (err) console.error
     else {
       if(result.length>0) {
-        res.json(result)
+        res.status(200).json(result)
       } else {
-        res.send("Not results")
+        res.status(200).json([])
       }
     }
   })
@@ -56,9 +50,28 @@ router.get('/:id', (req, res) => {
       res.status(400).json(err)
     }else {
       if (result.length>0) {
-        res.json(result)
+        res.status(200).json(result)
       } else {
-        res.status(404).send({message: "Not result"})
+        res.status(200).json([])
+      }
+    }
+  })
+})
+
+router.get('/login/:userData', (req, res) => {
+  const { userData } = req.params;
+  const [user, pass] = userData.split(';')
+
+  const sql = `SELECT nivel_usuario.idUsuario FROM usuario INNER JOIN nivel_usuario ON usuario.id = nivel_usuario.idUsuario WHERE user='${user}' && pass='${pass}'`;
+  connection.query(sql, (err, result) => {
+    if (err) {
+      console.log(err.message)
+      res.status(400).json(err)
+    }else {
+      if (result.length>0) {
+        res.status(200).json(result)
+      } else {
+        res.status(200).json([])
       }
     }
   })
@@ -71,13 +84,12 @@ router.post('/', async(req, res) => {
   connection.query(sql, err => {
     if (err) {
       console.log(err.message)
-      res.status(500).json(err)
+      res.status(400).json(err)
       return
     } else {
       let id;
       lastId('usuario').then(x => {
         id=x
-        console.log(id)
         if (id!=='400') {
           updateDate(id, 'usuario')
           createNivelUsuario(id, idNivel)

@@ -43,7 +43,7 @@ CREATE TABLE pago_cliente (
   CONSTRAINT fk_Cli FOREIGN KEY(idCliente) REFERENCES usuario(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
-INSERT INTO usuario (user, pass, nombre, apellido, cedula, telefono, direccion, correo)
+INSERT INTO usuario (user, pass, nombre, apellido, cedula, telefono, direccion, correo, fecha)
 VALUES
 (
   'admin',
@@ -53,7 +53,8 @@ VALUES
    "28197626",
   "0412-4722407",
   "Veritas",
-  "luis@321ignition.com"
+  "luis@321ignition.com",
+  CURDATE()
 );
 
 INSERT INTO nivel_usuario(idUsuario, idNivel) VALUES(1, 1);
@@ -65,12 +66,13 @@ create table categoria (
 
 create table producto (
   id INT AUTO_INCREMENT PRIMARY KEY,
-  descrip	VARCHAR(50) NOT NULL,
+  titulo VARCHAR(50) NOT NULL,
+  precio DECIMAL(18,2) NOT NULL,
   stock INT NOT NULL,
-  vistas INT NOT NULL,
-  imagen VARCHAR(250) NOT NULL,
+  marca VARCHAR(50) NOT NULL DEFAULT 'Farmatodo',
+  vistas INT DEFAULT 0,
+  imagen VARCHAR(5000) NOT NULL,
   idCategoria INT null,
-  expired date NOT NULL,
   CONSTRAINT fkCat FOREIGN KEY(idCategoria) REFERENCES categoria(id) ON DELETE CASCADE ON UPDATE CASCADE 
 );
 

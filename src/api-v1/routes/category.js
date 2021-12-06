@@ -2,29 +2,31 @@ const express = require('express');
 const router = express.Router();
 const dbConnection = require("../../config/connection");
 
-const connection = dbConnection() 
-
-connection.connect (err => {
-   if (err) {
-    console.error('error connecting:');
-    return;
-  };
-})
+const connection = dbConnection();
 
 router.get('/', (req, res) => {
   const sql = "SELECT * FROM categoria";
 
   connection.query(sql, (err, result) => {
-    if (err) console.error
+    if (err) {
+      console.log(err)
+    }
     else {
       if(result.length>0) {
         res.json(result)
       } else {
-        res.send("Not results")
+        res.status(200).json([])
       }
     }
   })
 })
+
+router.get('/test/:id', (req, res) => {
+  const { id } = req.params;
+  console.log(id)
+  res.status(200).send('ok')
+})
+
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
@@ -35,9 +37,9 @@ router.get('/:id', (req, res) => {
       res.status(400).json(err)
     }else {
       if (result.length>0) {
-        res.json(result)
+        res.status(200).json(result)
       } else {
-        res.status(404).send({message: "Not result"})
+        res.status(200).json([])
       }
     }
   })
