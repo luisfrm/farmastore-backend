@@ -23,7 +23,6 @@ const createNivelUsuario = (idUsuario, idNivel) => {
       return 200;
     }
   })
-  connection.release();
 }
 
 router.get('/', (req, res) => {
